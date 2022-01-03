@@ -1,12 +1,39 @@
-import {React, useEffect} from 'react'
+import {React, useEffect, useState} from 'react'
 import apiaudio from 'apiaudio'
 
+apiaudio.configure({ apiKey: "1bbba608c42f4c1388e3a2144a2d9720" });
+
 const App = ()=> {
-  console.log(apiaudio)
+  
+  const [formData, setFormData] = useState({
+    text: "",
+    speaker: "",
+    template: ""
+  })
+
+  const handleChange = (e)=> {
+    const { name, value } = e.target;
+
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+    console.log(formData)
+  };
+  
+  const speaker = ["ryan", "libby", "aria", "guy", "clara", "liam", "david", "elvira","matthias", "ingrid", "pauline", "henri", "alena", "dmitry"]
+  const speakers = speaker.map(element => {
+    return (
+    <option value={element}>{element.toUpperCase()}</option>)})
+  const template = ["copacabana", "breakingnews", "hautecuisine", "openup", "curtaincall", "fairytale", "hotwheels"]
+  const templates = template.map(element => {
+    return (
+    <option value={element}>{element.toUpperCase()}</option>)})
+  
   useEffect(()=> 
   
   async function audioAds() {
-    apiaudio.configure({ apiKey: "1bbba608c42f4c1388e3a2144a2d9720" });
+    
     const text = `
     <<soundSegment::intro>>
     <<sectionName::hello>> 
@@ -28,7 +55,20 @@ const App = ()=> {
   }
   
   )
-  return <h1>HELLO</h1>
+  return (
+    <>
+      <h1>BUILD AUDIO IN SECONDS</h1>
+      <span>Type Anything and choose your speaker</span>
+      <input type="text" name="text" placeholder="kindly enter your text here"  value={formData.text} onChange={handleChange}/>
+      <select name="speaker" value={formData.speaker} onChange={handleChange}>
+        {speakers}
+      </select>
+      <span>Choose a template and create your audio</span>
+      <select name="template"  value={formData.template} onChange={handleChange}>
+        {templates}
+      </select>
+    </>
+  )
 }
 
 export default App;
