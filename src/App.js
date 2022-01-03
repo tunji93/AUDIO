@@ -24,7 +24,7 @@ const App = ()=> {
     console.log(formData)
   };
   
-  const speaker = ["ryan", "libby", "aria", "guy", "clara", "liam", "david", "elvira","matthias", "ingrid", "pauline", "henri", "alena", "dmitry"]
+  const speaker = ["ryan", "libby", "aria", "guy", "david", "elvira","matthias", "ingrid", "pauline", "henri", "alena", "dmitry"]
   const speakers = speaker.map(element => {
     return (
     <option key = {element} value={element}>{element.toUpperCase()}</option>)})
