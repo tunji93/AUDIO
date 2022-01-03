@@ -1,9 +1,12 @@
 import {React, useEffect, useState} from 'react'
 import apiaudio from 'apiaudio'
+import  "./App.css"
 
-apiaudio.configure({ apiKey: "1bbba608c42f4c1388e3a2144a2d9720" });
+
 
 const App = ()=> {
+  const [check, setCheck] = useState(0)
+    
   
   const [formData, setFormData] = useState({
     text: "",
@@ -24,50 +27,74 @@ const App = ()=> {
   const speaker = ["ryan", "libby", "aria", "guy", "clara", "liam", "david", "elvira","matthias", "ingrid", "pauline", "henri", "alena", "dmitry"]
   const speakers = speaker.map(element => {
     return (
-    <option value={element}>{element.toUpperCase()}</option>)})
+    <option key = {element} value={element}>{element.toUpperCase()}</option>)})
   const template = ["copacabana", "breakingnews", "hautecuisine", "openup", "curtaincall", "fairytale", "hotwheels"]
   const templates = template.map(element => {
     return (
-    <option value={element}>{element.toUpperCase()}</option>)})
+    <option key={element} value={element}>{element.toUpperCase()}</option>)})
   
-  useEffect(()=> 
-  
-  async function audioAds() {
+    async function helloWorld() {
+      if (check ===0) {
+        apiaudio.configure({ apiKey: "1bbba608c42f4c1388e3a2144a2d9720" });
+        return
+      }
+      
+      try {
+        const script = await apiaudio.Script.create({ scriptText: `
+       SOUNDSEGMENT::INTRO
+       SECTIONNAME::INTRO 
+       Hello world. Welcome to API dot audio.
+       SOUNDSEGMENT::MAIN
+       SECTIONNAME::MAIN
+       ${formData.text} <break time = '1s'/>
+       SOUNDSEGMENT::OUTRO 
+       SECTIONNAME::OUTRO
+       We're excited to hear your script!
+       `, scriptName: "hello", projectName: "hello", moduleName: "hello" });
+        console.log(script);
     
-    const text = `
-    <<soundSegment::intro>>
-    <<sectionName::hello>> 
-    If you have any plans for today, cancel them, this really is the final call!  
-    <<soundSegment::main>>
-    <<sectionName::main1>> 
-    We're clearing out all remaining 2021 Sords at Ottawa's top volume Sord dealers. These are the last days for clear out pricing and amazing clear out incentives. Zero percent financing for up to 84 months, and up to 7700 in cash price adjustments on all 2021 Sords at Sord on Bank street! Pick one of the 92 Santa Fays in stock, a family-sized SUV with all-wheel drive and back-up cameras from just $85 weekly, zero down!
-    It's the easiest time to get into a new Sord, but these deals won't be around for long, ONLY until midnight TONIGHT! At Bank street Sord, better cars for passionate car drivers. <break time="1s"/>
-    `;
-    try {
-      const script = await apiaudio.Script.create({
-        scriptText: text,
-      });
-      console.log(script);
-  
-    } catch (e) {
-      console.error(e);
+        const speech = await apiaudio.Speech.create({ scriptId: script["scriptId"], voice: `${formData.speaker}` });
+        console.log(speech); 
+    
+        const template = `${formData.template}`;
+        const mastering = await apiaudio.Mastering.create({ scriptId: script["scriptId"], soundTemplate: template });
+        console.log(mastering);
+        
+      } catch (e) {
+        console.error(e);
+      }
     }
-  }
+
+    useEffect((helloWorld()), [check])
+    
+    const handleSumbit = ()=> {
+      setCheck(el=> el+1)
+    }
   
-  )
+  
   return (
-    <>
+    <div className = "all">
       <h1>BUILD AUDIO IN SECONDS</h1>
-      <span>Type Anything and choose your speaker</span>
-      <input type="text" name="text" placeholder="kindly enter your text here"  value={formData.text} onChange={handleChange}/>
-      <select name="speaker" value={formData.speaker} onChange={handleChange}>
-        {speakers}
-      </select>
-      <span>Choose a template and create your audio</span>
-      <select name="template"  value={formData.template} onChange={handleChange}>
-        {templates}
-      </select>
-    </>
+      <div className="text">
+        <span>Type Anything and choose your speaker</span>
+        <input type="text" name="text" placeholder="kindly enter your text here"  value={formData.text} onChange={handleChange}/>
+      </div>
+      <div className="chs-template">
+        <select name="speaker" value={formData.speaker} onChange={handleChange}>
+          {speakers}
+        </select>
+      </div>
+      <div className="chs-template">
+        <span>Choose a template and create your audio</span>
+        <select name="template"  value={formData.template} onChange={handleChange}>
+          {templates}
+        </select>
+      </div>
+      <button>Generate Audio</button>
+            
+      <audio  src="./static/music/foo.mp3" controls autoPlay/>
+    </div>
+
   )
 }
 
